@@ -56,7 +56,7 @@ public class BallManager : MonoBehaviour
     public void MakeBallObject()
     {
         Debug.Log("MakeBallObject");
-        if (m_ballEnable == true && m_ballSpawned == false)
+        if (m_ballEnable)
         {
             Debug.Log("Instantiate");
 
@@ -65,14 +65,10 @@ public class BallManager : MonoBehaviour
             m_ballObject.transform.SetParent(ballObjectPool);
             m_ballObject.transform.position = m_ballPos;
             m_ballObject.transform.localScale /= 3;
+            m_ballObject = null;
 
             m_ballPos = m_curPivtoPos;
-
-            m_ballObject = null;
-            
             m_ballSpawned = true;
-        } else {
-            m_ballSpawned = false;
         }
     }
 
@@ -101,9 +97,11 @@ public class BallManager : MonoBehaviour
             lineRenderer = tLine.GetComponent<LineRenderer>();
             lineRenderer.transform.position = m_ballPos;
 
-            Vector3 lookatVec = (m_ballPos - mainCam.transform.position).normalized;
-            lineRenderer.transform.rotation.SetLookRotation(lookatVec);
-            // lineRenderer.transform.rotation.SetLookRotation(new Vector3(0, mainCam.transform.rotation.y, 0));
+            //Vector3 lookatVec = (m_ballPos - mainCam.transform.position).normalized;
+            //Vector3 forward = m_ballPos + lookatVec; 
+            //lineRenderer.SetPosition(0, forward);
+            lineRenderer.transform.rotation.SetLookRotation(new Vector3(0,Camera.main.transform.rotation.y,0));
+            lineRenderer.alignment = LineAlignment.TransformZ;
             lineRenderer.useWorldSpace = false;
 
             Debug.LogFormat("position: {0}", lineRenderer.transform.position);
@@ -113,16 +111,13 @@ public class BallManager : MonoBehaviour
             Vector3[] linePoints = new Vector3[pointCounts];
             lineRenderer.positionCount = pointCounts;
 
+            //linePoints[0] = new Vector3(0,0,0);
             for (int i = 0; i < pointCounts; i++)
             {
-                // linePoints[i] = new Vector3(
-                //     (float)rd.X[i]/10,
-                //     (float)rd.Y[i]/10,
-                //     (float)rd.Z[i]/10);
                 linePoints[i] = new Vector3(
-                    (float)rd.X[i]/10,
-                    (float)rd.Y[i]/10,
-                    (float)rd.Z[i]/10);
+                    (float)rd.X[i],
+                    (float)rd.Y[i],
+                    (float)rd.Z[i]);
                 // Debug.LogFormat("vector[{0}]: {1}", i, linePoints[i]);
             }
             StartCoroutine(AnimateLines(linePoints));
@@ -136,7 +131,7 @@ public class BallManager : MonoBehaviour
         int cnt = linePnts.Length;
         float segmentDurtaion = renderAnimateDuration / cnt;
 
-        for (int i = 0; i < cnt - 1; i++)
+        for (int i = 0; i < cnt - 1 ; i++)
         {
             float startTime = Time.time;
             
