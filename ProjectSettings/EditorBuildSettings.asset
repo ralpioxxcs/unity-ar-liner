@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/BallLine.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects:
-    UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: ebe1c913c04ad452ea962b2dc661e52e,
-      type: 2}
+    UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: b48d923ae44ad43b89c9944775eb4e4f, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 513d619c96e5c4528b3db597834f2bb8, type: 2}
