@@ -7,6 +7,11 @@ using UnityEngine.UI;
 
 public class BallManager : MonoBehaviour
 {
+    public Text carry;
+    public Text bspeed;
+    public Text cspeed;
+    public Text type;
+
     public InputField inputField;
     public Camera mainCam;
 
@@ -35,6 +40,7 @@ public class BallManager : MonoBehaviour
     void Start()
     {
         m_centerVec = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        inputField.text = "1"; // default
     }
 
     // Update is called once per frame
@@ -48,7 +54,9 @@ public class BallManager : MonoBehaviour
             pivot.rotation = Quaternion.Lerp(pivot.rotation, hitPose.rotation, 0.2f);
             m_curPivtoPos = hitPose.position;
             m_curCamRot = mainCam.transform.rotation;
-        } else {
+        }
+        else
+        {
             m_ballEnable = false;
         }
     }
@@ -58,16 +66,22 @@ public class BallManager : MonoBehaviour
         Debug.Log("MakeBallObject");
         if (m_ballEnable)
         {
+            if (m_ballObject != null)
+            {
+                Destroy(m_ballObject);
+                m_ballObject = null;
+            }
             Debug.Log("Instantiate");
 
             GameObject prefab = Resources.Load("Prefab/GolfBall") as GameObject;
             m_ballObject = Instantiate(prefab) as GameObject;
             m_ballObject.transform.SetParent(ballObjectPool);
-            m_ballObject.transform.position = m_ballPos;
+            m_ballObject.transform.position = m_curPivtoPos;
+            m_ballObject.transform.rotation = m_curCamRot;
             m_ballObject.transform.localScale /= 3;
-            m_ballObject = null;
 
             m_ballPos = m_curPivtoPos;
+            m_ballRot = m_curCamRot;
             m_ballSpawned = true;
         }
     }
@@ -79,11 +93,8 @@ public class BallManager : MonoBehaviour
         if (m_ballSpawned)
         {
             string index = inputField.text;
-            Debug.LogFormat("INPUT FIELD : {0}",index);
-            if(index == null) {
-                index = "1";
-            }
-            if(int.Parse(index) < 0 || int.Parse(index) > 5 ) {
+            if (int.Parse(index) < 0 || int.Parse(index) > 5)
+            {
                 index = "1";
             }
             Debug.LogFormat("DrawBall (index : {0})", index);
@@ -95,33 +106,37 @@ public class BallManager : MonoBehaviour
 
             GameObject tLine = Instantiate(lineRendererPrefab);
             lineRenderer = tLine.GetComponent<LineRenderer>();
-            lineRenderer.transform.position = m_ballPos;
 
-            //Vector3 lookatVec = (m_ballPos - mainCam.transform.position).normalized;
-            //Vector3 forward = m_ballPos + lookatVec; 
-            //lineRenderer.SetPosition(0, forward);
-            lineRenderer.transform.rotation.SetLookRotation(new Vector3(0,Camera.main.transform.rotation.y,0));
+            Quaternion test = mainCam.transform.rotation;
+            test.x = 0;
+            test.z = 0;
+
+            lineRenderer.transform.SetPositionAndRotation(m_ballPos, test);
             lineRenderer.alignment = LineAlignment.TransformZ;
             lineRenderer.useWorldSpace = false;
-
-            Debug.LogFormat("position: {0}", lineRenderer.transform.position);
-            Debug.LogFormat("rotation : {0}", lineRenderer.transform.rotation);
 
             int pointCounts = rd.Index.Count;
             Vector3[] linePoints = new Vector3[pointCounts];
             lineRenderer.positionCount = pointCounts;
 
-            //linePoints[0] = new Vector3(0,0,0);
             for (int i = 0; i < pointCounts; i++)
             {
                 linePoints[i] = new Vector3(
                     (float)rd.X[i],
                     (float)rd.Y[i],
                     (float)rd.Z[i]);
-                // Debug.LogFormat("vector[{0}]: {1}", i, linePoints[i]);
+                //Debug.LogFormat("vector[{0}]: {1}", i, linePoints[i]);
             }
+            //lineRenderer.SetPositions(linePoints);
+            carry.text = rd.CarryResult.carry.ToString();
+            bspeed.text = rd.BallResult.speed.ToString() + "m/s";
+            cspeed.text = rd.ClubResult.club_speed.ToString() + "m/s";
+            type.text = rd.Type;
+
+            Debug.LogFormat("type : {0}", rd.Type);
+
             StartCoroutine(AnimateLines(linePoints));
-            
+
             m_ballSpawned = false;
         }
     }
@@ -131,10 +146,11 @@ public class BallManager : MonoBehaviour
         int cnt = linePnts.Length;
         float segmentDurtaion = renderAnimateDuration / cnt;
 
-        for (int i = 0; i < cnt - 1 ; i++)
+        lineRenderer.SetPosition(0, linePnts[0]);
+        for (int i = 0; i < cnt - 1; i++)
         {
             float startTime = Time.time;
-            
+
             Vector3 startPos = linePnts[i];
             Vector3 endPos = linePnts[i + 1];
 
@@ -143,7 +159,7 @@ public class BallManager : MonoBehaviour
             {
                 float t = (Time.time - startTime) / segmentDurtaion;
                 pos = Vector3.Lerp(startPos, endPos, t);
-                for (int j = i; j < cnt; j++)
+                for (int j = i + 1; j < cnt; j++)
                 {
                     lineRenderer.SetPosition(j, pos);
                 }

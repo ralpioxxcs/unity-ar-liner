@@ -43,6 +43,7 @@ public class RadarData
     public ClubResult ClubResult;
     public List<int> Index;
     public CarryResult CarryResult;
+    public string Type;
     public List<double> X;
     public List<double> Y;
     public List<double> Z;
