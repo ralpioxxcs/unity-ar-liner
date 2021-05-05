@@ -122,9 +122,9 @@ public class BallManager : MonoBehaviour
             for (int i = 0; i < pointCounts; i++)
             {
                 linePoints[i] = new Vector3(
-                    (float)rd.X[i],
-                    (float)rd.Y[i],
-                    (float)rd.Z[i]);
+                    (float)rd.X[i] - (float)rd.X[0],
+                    (float)rd.Y[i] - (float)rd.Y[0],
+                    (float)rd.Z[i] - (float)rd.Z[0]);
                 //Debug.LogFormat("vector[{0}]: {1}", i, linePoints[i]);
             }
             //lineRenderer.SetPositions(linePoints);
