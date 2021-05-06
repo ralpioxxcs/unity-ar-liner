@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/BallLine.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects:
-    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 5501427095fb55e4fa879c357a21b748, type: 2}
-    UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: b48d923ae44ad43b89c9944775eb4e4f, type: 2}
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 513d619c96e5c4528b3db597834f2bb8, type: 2}
+    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 5501427095fb55e4fa879c357a21b748,
+      type: 2}
+    UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: b48d923ae44ad43b89c9944775eb4e4f,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 513d619c96e5c4528b3db597834f2bb8,
+      type: 2}

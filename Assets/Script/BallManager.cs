@@ -57,6 +57,9 @@ public class BallManager : MonoBehaviour
         }
         else
         {
+            pivot.position = new Vector3(mainCam.transform.position.x,
+                                         mainCam.transform.position.y,
+                                         mainCam.transform.position.z - 5);
             m_ballEnable = false;
         }
     }
@@ -87,11 +90,18 @@ public class BallManager : MonoBehaviour
     }
 
     [SerializeField] private float renderAnimateDuration = 1f;
+    GameObject lineObject;
     public void DrawBallTrajectory()
     {
         Debug.Log("DrawBall First");
         if (m_ballSpawned)
-        {
+        {   
+            if(lineObject != null)
+            {
+                Destroy(lineObject);
+                lineObject = null;
+            }
+
             string index = inputField.text;
             if (int.Parse(index) < 0 || int.Parse(index) > 5)
             {
@@ -104,8 +114,8 @@ public class BallManager : MonoBehaviour
             TextAsset ResourceRequest = Resources.Load(filename) as TextAsset;
             RadarData rd = RadarData.CreateFromJSON(ResourceRequest.ToString());
 
-            GameObject tLine = Instantiate(lineRendererPrefab);
-            lineRenderer = tLine.GetComponent<LineRenderer>();
+            lineObject = Instantiate(lineRendererPrefab);
+            lineRenderer = lineObject.GetComponent<LineRenderer>();
 
             Quaternion test = mainCam.transform.rotation;
             test.x = 0;
@@ -122,9 +132,9 @@ public class BallManager : MonoBehaviour
             for (int i = 0; i < pointCounts; i++)
             {
                 linePoints[i] = new Vector3(
-                    (float)rd.X[i] - (float)rd.X[0],
-                    (float)rd.Y[i] - (float)rd.Y[0],
-                    (float)rd.Z[i] - (float)rd.Z[0]);
+                    ((float)rd.X[i] - (float)rd.X[0])/10,
+                    ((float)rd.Y[i] - (float)rd.Y[0])/10,
+                    ((float)rd.Z[i] - (float)rd.Z[0])/10);
                 //Debug.LogFormat("vector[{0}]: {1}", i, linePoints[i]);
             }
             //lineRenderer.SetPositions(linePoints);
@@ -146,7 +156,6 @@ public class BallManager : MonoBehaviour
         int cnt = linePnts.Length;
         float segmentDurtaion = renderAnimateDuration / cnt;
 
-        lineRenderer.SetPosition(0, linePnts[0]);
         for (int i = 0; i < cnt - 1; i++)
         {
             float startTime = Time.time;
@@ -159,7 +168,7 @@ public class BallManager : MonoBehaviour
             {
                 float t = (Time.time - startTime) / segmentDurtaion;
                 pos = Vector3.Lerp(startPos, endPos, t);
-                for (int j = i + 1; j < cnt; j++)
+                for (int j = i+1; j < cnt; j++)
                 {
                     lineRenderer.SetPosition(j, pos);
                 }
